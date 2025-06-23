@@ -60,8 +60,9 @@ public class BookingController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    public BookingResponseDto getBookingById(@PathVariable Long id) {
-        return bookingService.findById(id);
+    public BookingResponseDto getBookingById(@PathVariable Long id, Authentication authentication) {
+        Long userId = getCurrentUserId(authentication);
+        return bookingService.findById(id, userId);
     }
 
     @PutMapping("/{id}")
