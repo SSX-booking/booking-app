@@ -16,7 +16,7 @@ public interface BookingService {
 
     Page<BookingResponseDto> findUserBookings(Long userId, Pageable pageable);
 
-    BookingResponseDto findById(Long bookingId);
+    BookingResponseDto findById(Long bookingId, Long userId);
 
     BookingResponseDto updateBooking(
             Long bookingId,

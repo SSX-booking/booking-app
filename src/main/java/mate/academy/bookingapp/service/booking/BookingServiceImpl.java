@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import mate.academy.bookingapp.dto.booking.BookingResponseDto;
 import mate.academy.bookingapp.dto.booking.CreateBookingRequestDto;
 import mate.academy.bookingapp.exception.AccommodationNotAvailableException;
+import mate.academy.bookingapp.exception.DuplicateBookingException;
 import mate.academy.bookingapp.mapper.BookingMapper;
 import mate.academy.bookingapp.model.Accommodation;
 import mate.academy.bookingapp.model.Booking;
@@ -27,11 +28,26 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public BookingResponseDto save(CreateBookingRequestDto bookingDto, Long userId) {
         Accommodation accommodation =
                 accommodationRepository.findById(bookingDto.getAccommodationId())
                 .orElseThrow(() -> new RuntimeException("Accommodation not found with id: "
                         + bookingDto.getAccommodationId()));
+
+        boolean alreadyBooked = bookingRepository
+                .existsByAccommodationIdAndCheckInDateAndCheckOutDateAndUserId(
+                        accommodation.getId(),
+                        bookingDto.getCheckInDate(),
+                        bookingDto.getCheckOutDate(),
+                        userId);
+        if (alreadyBooked) {
+            throw new DuplicateBookingException(
+                    "This accommodation is already booked on check in date:  "
+                            + bookingDto.getCheckInDate() + ", check out date: "
+                            + bookingDto.getCheckOutDate()
+            );
+        }
 
         if (accommodation.getAvailability() <= 0) {
             throw new AccommodationNotAvailableException("Accommodation is not available");
@@ -77,8 +93,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponseDto findById(Long id) {
-        Booking booking = bookingRepository.findById(id)
+    public BookingResponseDto findById(Long id, Long userId) {
+        Booking booking = bookingRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
         return bookingMapper.toBookingResponseDto(booking);
     }
@@ -87,7 +103,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto updateBooking(Long bookingId,
                                             CreateBookingRequestDto updatedBooking,
                                             Long userId) {
-        Booking booking = bookingRepository.findById(bookingId)
+        Booking booking = bookingRepository.findByIdAndUserId(bookingId, userId)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
 
         booking.setCheckInDate(updatedBooking.getCheckInDate());
@@ -99,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public void deleteBooking(Long bookingId, Long userId) {
-        Booking booking = bookingRepository.findById(bookingId)
+        Booking booking = bookingRepository.findByIdAndUserId(bookingId, userId)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
 
         booking.setStatus(BookingStatus.CANCELLED);
