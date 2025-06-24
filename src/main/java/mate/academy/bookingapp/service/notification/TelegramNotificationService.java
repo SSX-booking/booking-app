@@ -1,5 +1,6 @@
 package mate.academy.bookingapp.service.notification;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpEntity;
@@ -7,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import io.github.cdimascio.dotenv.Dotenv;
 
 @Service
 public class TelegramNotificationService implements NotificationService {

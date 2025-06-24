@@ -8,6 +8,9 @@ import mate.academy.bookingapp.exception.EntityNotFoundException;
 import mate.academy.bookingapp.mapper.AccommodationMapper;
 import mate.academy.bookingapp.model.Accommodation;
 import mate.academy.bookingapp.repository.accommodation.AccommodationRepository;
+import mate.academy.bookingapp.service.notification.AccommodationNotificationTemplate;
+import mate.academy.bookingapp.service.notification.AddressFormatter;
+import mate.academy.bookingapp.service.notification.NotificationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     private final AccommodationMapper accommodationMapper;
     private final AccommodationRepository accommodationRepository;
+    private final NotificationService notificationService;
 
     @Override
     public AccommodationResponseDto save(CreateAccommodationRequestDto requestDto) {
@@ -26,8 +30,20 @@ public class AccommodationServiceImpl implements AccommodationService {
                     + requestDto.getName());
         }
         Accommodation accommodation = accommodationMapper.toAccommodation(requestDto);
-        return accommodationMapper.toAccommodationDto(accommodationRepository.save(accommodation));
+        accommodationRepository.save(accommodation);
 
+        notificationService.sendNotification(
+                AccommodationNotificationTemplate.ACCOMMODATION_CREATED.format(
+                        accommodation.getName(),
+                        accommodation.getType(),
+                        AddressFormatter.format(accommodation.getLocation()),
+                        accommodation.getSize(),
+                        String.join(", ", accommodation.getAmenities()),
+                        accommodation.getDailyRate(),
+                        accommodation.getAvailability()
+                )
+        );
+        return accommodationMapper.toAccommodationDto(accommodation);
     }
 
     @Override
@@ -52,6 +68,14 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     @Override
     public void deleteById(Long id) {
+        accommodationRepository.findById(id).ifPresent(accommodation ->
+                notificationService.sendNotification(
+                AccommodationNotificationTemplate.ACCOMMODATION_DELETED.format(
+                        id,
+                        accommodation.getName(),
+                        AddressFormatter.format(accommodation.getLocation())
+                )
+        ));
         accommodationRepository.deleteById(id);
     }
 }
