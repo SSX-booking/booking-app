@@ -14,6 +14,9 @@ import mate.academy.bookingapp.model.User;
 import mate.academy.bookingapp.repository.accommodation.AccommodationRepository;
 import mate.academy.bookingapp.repository.booking.BookingRepository;
 import mate.academy.bookingapp.repository.user.UserRepository;
+import mate.academy.bookingapp.service.notification.AddressFormatter;
+import mate.academy.bookingapp.service.notification.BookingNotificationTemplate;
+import mate.academy.bookingapp.service.notification.NotificationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ public class BookingServiceImpl implements BookingService {
     private final AccommodationRepository accommodationRepository;
     private final BookingMapper bookingMapper;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -65,6 +69,20 @@ public class BookingServiceImpl implements BookingService {
         accommodationRepository.save(accommodation);
 
         Booking savedBooking = bookingRepository.save(booking);
+
+        notificationService.sendNotification(
+                BookingNotificationTemplate.BOOKING_CREATED.format(
+                        booking.getAccommodation().getName(),
+                        booking.getAccommodation().getType(),
+                        booking.getCheckInDate(),
+                        booking.getCheckOutDate(),
+                        AddressFormatter.format(booking.getAccommodation().getLocation()),
+                        booking.getAccommodation().getSize(),
+                        booking.getAccommodation().getDailyRate(),
+                        booking.getStatus(),
+                        booking.getUser().getFullName()
+                )
+        );
         return bookingMapper.toBookingResponseDto(savedBooking);
     }
 
@@ -119,7 +137,6 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
 
         booking.setStatus(BookingStatus.CANCELLED);
-
         bookingRepository.save(booking);
         bookingRepository.delete(booking);
 
@@ -128,5 +145,17 @@ public class BookingServiceImpl implements BookingService {
             accommodation.setAvailability(accommodation.getAvailability() + 1);
             accommodationRepository.save(accommodation);
         }
+
+        notificationService.sendNotification(
+                BookingNotificationTemplate.BOOKING_CANCELLED.format(
+                        bookingId,
+                        booking.getAccommodation().getName(),
+                        booking.getAccommodation().getType(),
+                        booking.getCheckInDate(),
+                        booking.getCheckOutDate(),
+                        AddressFormatter.format(booking.getAccommodation().getLocation()),
+                        booking.getUser().getFullName()
+                )
+        );
     }
 }
