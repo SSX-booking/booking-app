@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class TelegramNotificationService implements NotificationService {
 
-    private final String botToken;
     private final String chatId;
     private final String telegramApiUrl;
     private final RestTemplate restTemplate;
@@ -20,7 +19,7 @@ public class TelegramNotificationService implements NotificationService {
     public TelegramNotificationService() {
         Dotenv dotenv = Dotenv.load();
 
-        this.botToken = dotenv.get("TELEGRAM_BOT_TOKEN");
+        String botToken = dotenv.get("TELEGRAM_BOT_TOKEN");
         this.chatId = dotenv.get("TELEGRAM_CHAT_ID");
 
         if (botToken == null || chatId == null) {
