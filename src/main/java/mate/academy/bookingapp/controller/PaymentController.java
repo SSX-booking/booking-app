@@ -1,5 +1,4 @@
 package mate.academy.bookingapp.controller;
 
-public class NotificationsService {
-    
+public class PaymentController {
 }
