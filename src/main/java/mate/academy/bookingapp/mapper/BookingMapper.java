@@ -13,6 +13,7 @@ public interface BookingMapper {
     Booking toBooking(CreateBookingRequestDto dto);
 
     @Mapping(source = "id", target = "bookingId")
+    @Mapping(source = "accommodation.name", target = "accommodationName")
     @Mapping(source = "accommodation.type", target = "accommodationType")
     @Mapping(source = "accommodation.location", target = "location")
     @Mapping(source = "accommodation.size", target = "size")

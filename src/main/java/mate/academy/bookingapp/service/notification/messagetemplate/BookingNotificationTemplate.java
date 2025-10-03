@@ -1,4 +1,4 @@
-package mate.academy.bookingapp.service.notification;
+package mate.academy.bookingapp.service.notification.messagetemplate;
 
 import lombok.Getter;
 
@@ -14,7 +14,7 @@ public enum BookingNotificationTemplate {
         📍 Address: %s
         📐 Size: %s
         💲 Daily Rate: %.2f
-        🔖 Status: %s
+        🔖 Payment Status: %s
         👤 Booked By: %s
         """),
 
@@ -27,6 +27,17 @@ public enum BookingNotificationTemplate {
         📅 Check-Out: %s
         📍 Address: %s
         👤 Booked By: %s
+        """),
+
+    BOOKING_EXPIRED("""
+        ❌ *Booking Cancelled*
+        🆔 ID: %s
+        🏨 Name: %s
+        🏷️ Type: %s
+        📅 Check-In: %s
+        📅 Check-Out: %s
+        📍 Address: %s
+        🔖 Payment Status: %s
         """);
 
     private final String template;

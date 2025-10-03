@@ -1,4 +1,4 @@
-package mate.academy.bookingapp.service.notification;
+package mate.academy.bookingapp.service.notification.messagetemplate;
 
 import lombok.Getter;
 

@@ -7,11 +7,11 @@ import lombok.Data;
 
 @Data
 public class UserLoginRequestDto {
-    @NotBlank
+    @NotBlank(message = "Email cannot be empty")
     @Email
     @Size(min = 6, max = 50)
     private String email;
-    @NotBlank
+    @NotBlank(message = "Password cannot be empty")
     @Size(min = 8, max = 40)
     private String password;
 }
