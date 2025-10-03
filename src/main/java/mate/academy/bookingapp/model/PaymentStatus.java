@@ -2,7 +2,8 @@ package mate.academy.bookingapp.model;
 
 public enum PaymentStatus {
     PENDING,
-    PAID,
+    COMPLETED,
     CANCELLED,
-    DECLINED
+    DECLINED,
+    EXPIRED
 }
