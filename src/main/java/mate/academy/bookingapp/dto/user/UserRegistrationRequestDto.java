@@ -15,17 +15,18 @@ import mate.academy.bookingapp.validator.ValidatePassword;
 @RequiredArgsConstructor
 @ValidatePassword
 public class UserRegistrationRequestDto {
-    @NotBlank
+    @NotBlank(message = "Email cannot be empty")
     @Email
     private String email;
-    @NotBlank
+    @NotBlank(message = "Password cannot be empty")
     @Size(min = 8, max = 40)
     private String password;
-    @NotBlank
+    @NotBlank(message = "Repeat password cannot be empty")
     private String repeatPassword;
-    @NotBlank
+    @NotBlank(message = "First name cannot be empty")
     private String firstName;
-    @NotBlank
+    @NotBlank(message = "Last name cannot be empty")
     private String lastName;
+    @NotBlank(message = "Shipping address cannot be empty")
     private String shippingAddress;
 }

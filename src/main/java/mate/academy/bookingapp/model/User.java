@@ -46,6 +46,9 @@ public class User implements UserDetails {
 
     private boolean isDeleted;
 
+    @Column(nullable = false)
+    private boolean enabled;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
@@ -63,7 +66,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !isDeleted;
+        return enabled && !isDeleted;
     }
 
     @Override
@@ -85,4 +88,3 @@ public class User implements UserDetails {
         return firstName + " " + lastName;
     }
 }
-
