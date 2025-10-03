@@ -9,6 +9,7 @@ import mate.academy.bookingapp.model.BookingStatus;
 @Data
 public class BookingResponseDto {
     private Long bookingId;
+    private String accommodationName;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private String accommodationType;
