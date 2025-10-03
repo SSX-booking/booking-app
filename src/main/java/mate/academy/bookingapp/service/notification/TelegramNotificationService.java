@@ -7,6 +7,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -43,7 +44,7 @@ public class TelegramNotificationService implements NotificationService {
 
         try {
             restTemplate.postForEntity(telegramApiUrl, request, String.class);
-        } catch (Exception e) {
+        } catch (RestClientException e) {
             System.err.println("Failed to send Telegram message: " + e.getMessage());
         }
     }
